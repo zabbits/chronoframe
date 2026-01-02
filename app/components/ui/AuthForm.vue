@@ -10,6 +10,7 @@ defineProps<{
   providers?: Array<ButtonProps | false | undefined>
   class?: string
   loading?: boolean
+  disablePassword?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -93,53 +94,55 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
           :loading="loading"
         />
       </div>
-      <USeparator
-        v-if="providers && providers.filter((item) => !!item).length > 0"
-        :label="$t('auth.form.action.or')"
-      />
-      <UForm
-        class="space-y-4"
-        :schema="schema"
-        :state="state"
-        :disabled="loading"
-        @submit="onSubmit"
-      >
-        <UFormField
-          :label="$t('auth.form.labels.email')"
-          name="email"
+      <template v-if="!disablePassword">
+        <USeparator
+          v-if="providers && providers.filter((item) => !!item).length > 0"
+          :label="$t('auth.form.action.or')"
+        />
+        <UForm
+          class="space-y-4"
+          :schema="schema"
+          :state="state"
+          :disabled="loading"
+          @submit="onSubmit"
         >
-          <UInput
-            v-model="state.email"
-            :autofocus="false"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField
-          :label="$t('auth.form.labels.password')"
-          name="password"
-        >
-          <UInput
-            v-model="state.password"
-            :autofocus="false"
-            type="password"
-            class="w-full"
-          />
-        </UFormField>
-
-        <div class="flex flex-col gap-2">
-          <UButton
-            type="submit"
-            variant="soft"
-            color="info"
-            trailing-icon="tabler:login-2"
-            block
-            :loading="loading"
+          <UFormField
+            :label="$t('auth.form.labels.email')"
+            name="email"
           >
-            {{ $t('auth.form.action.continue') }}
-          </UButton>
-        </div>
-      </UForm>
+            <UInput
+              v-model="state.email"
+              :autofocus="false"
+              class="w-full"
+            />
+          </UFormField>
+
+          <UFormField
+            :label="$t('auth.form.labels.password')"
+            name="password"
+          >
+            <UInput
+              v-model="state.password"
+              :autofocus="false"
+              type="password"
+              class="w-full"
+            />
+          </UFormField>
+
+          <div class="flex flex-col gap-2">
+            <UButton
+              type="submit"
+              variant="soft"
+              color="info"
+              trailing-icon="tabler:login-2"
+              block
+              :loading="loading"
+            >
+              {{ $t('auth.form.action.continue') }}
+            </UButton>
+          </div>
+        </UForm>
+      </template>
     </div>
   </div>
 </template>

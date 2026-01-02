@@ -6,6 +6,16 @@ const _invalidCredentialsError = createError({
 })
 
 export default eventHandler(async (event) => {
+  const config = useRuntimeConfig()
+
+  if (config.public.oauth.github?.enabled || config.public.oauth.pocketid?.enabled) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'Forbidden',
+      message: 'Password login is disabled',
+    })
+  }
+
   const db = useDB()
   const { email, password } = await readValidatedBody(
     event,

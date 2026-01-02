@@ -32,6 +32,13 @@ export default defineNuxtConfig({
   components: [{ path: '~/components/ui', pathPrefix: false }, '~/components'],
 
   runtimeConfig: {
+    oauth: {
+      // @ts-ignore
+      pocketid: {
+        clientId: '',
+        clientSecret: '',
+      },
+    },
     public: {
       VERSION: pkg.version,
       mapbox: {
@@ -63,6 +70,11 @@ export default defineNuxtConfig({
       oauth: {
         github: {
           enabled: false,
+        },
+        // @ts-ignore
+        pocketid: {
+          enabled: false,
+          url: '',
         },
       },
     },

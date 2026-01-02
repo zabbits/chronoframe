@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import type { ButtonProps } from '@nuxt/ui'
+
 useHead({
   title: $t('auth.form.signin.title'),
 })
@@ -35,6 +37,32 @@ const onAuthSubmit = async (event: any) => {
       isLoading.value = false
     })
 }
+const providers = computed(() => {
+  const list: (ButtonProps | boolean)[] = [
+    config.public.oauth.github.enabled && {
+      icon: 'tabler:brand-github',
+      size: 'lg',
+      color: 'neutral',
+      variant: 'subtle',
+      block: true,
+      label: 'GitHub',
+      to: '/api/auth/github',
+      external: true,
+    },
+    // @ts-ignore
+    config.public.oauth.pocketid?.enabled && {
+      icon: 'tabler:id',
+      size: 'lg',
+      color: 'neutral',
+      variant: 'subtle',
+      block: true,
+      label: 'PocketID',
+      to: '/api/auth/pocketid',
+      external: true,
+    },
+  ]
+  return list.filter((p): p is ButtonProps => !!p)
+})
 </script>
 
 <template>
@@ -45,18 +73,8 @@ const onAuthSubmit = async (event: any) => {
       :title="$t('auth.form.signin.title')"
       :subtitle="$t('auth.form.signin.subtitle', [config.public.app.title])"
       :loading="isLoading"
-      :providers="[
-        config.public.oauth.github.enabled && {
-          icon: 'tabler:brand-github',
-          size: 'lg',
-          color: 'neutral',
-          variant: 'subtle',
-          block: true,
-          label: 'GitHub',
-          to: '/api/auth/github',
-          external: true,
-        },
-      ]"
+      :providers="providers"
+      :disable-password="providers.length > 0"
       @submit="onAuthSubmit"
     />
   </div>
