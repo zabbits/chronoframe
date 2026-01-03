@@ -9,6 +9,12 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/webgl-image/package.json ./packages/webgl-image/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
+FROM base AS prod-deps
+WORKDIR /usr/src/app
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages/webgl-image/package.json ./packages/webgl-image/
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
+
 FROM base AS build
 WORKDIR /usr/src/app
 COPY --from=deps /usr/src/app/node_modules ./node_modules
@@ -21,6 +27,7 @@ FROM node:22-alpine AS runtime
 RUN apk update && apk add --no-cache perl exiftool
 WORKDIR /app
 
+COPY --from=prod-deps /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/.output ./.output
 COPY --from=build /usr/src/app/packages/webgl-image/dist ./packages/webgl-image/dist
 COPY --from=build /usr/src/app/scripts ./scripts
